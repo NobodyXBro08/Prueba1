@@ -1,0 +1,14 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  font-family: "Montserrat", sans-serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #572f85 #0c0316;
+}
+
+
