@@ -30,7 +30,7 @@ const Form = () => {
         agentState: '',
         agentCity: '',
         agentIsExpose: false,
-        agenIisPublic: false,
+        agentIsPublic: false,
         agentEntityName: '',
         agentRelativeExpose: false,
         agentRelativeName: '',
@@ -48,6 +48,7 @@ const Form = () => {
             shareholdersState: '',
             shareholdersCity: '',
             shareholdersIsExpose: false,
+            shareholdersIsPublic: false,
             shareholdersEntityName: '',
             shareholdersRelativeExpose: false,
             shareholdersRelativeName: '',
@@ -104,14 +105,19 @@ const Form = () => {
     });
 
     const handleShareholderChange = (e, id) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target;  // Extraemos el nombre y el valor del campo.
+
+        // Actualizamos el estado de los accionistas.
         setFormData((prevData) => ({
             ...prevData,
             shareholders: prevData.shareholders.map((shareholder) =>
-                shareholder.id === id ? { ...shareholder, [name]: value } : shareholder
+                shareholder.id === id
+                    ? { ...shareholder, [name]: value } // Actualizamos el campo correspondiente.
+                    : shareholder
             ),
         }));
     };
+
 
     const addShareholder = () => {
         const newId = formData.shareholders.length + 1;
@@ -925,7 +931,7 @@ const Form = () => {
                         <select
                             name="shareholdersCountry"
                             value={shareholder.shareholdersCountry}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                            onChange={(e) => handleShareholderChange(e, shareholder.id, 'shareholders')}
                         >
                             <option value="">Seleccione un país</option>
                             {countries.map((country, index) => (
@@ -935,13 +941,14 @@ const Form = () => {
                             ))}
                         </select>
                     </label>
+
                     <label>
                         Estado del Accionista:
                         <select
                             name="shareholdersState"
                             value={shareholder.shareholdersState}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                            disabled={!shareholder.shareholdersCountry}
+                            onChange={(e) => handleShareholderChange(e, shareholder.id)} // Asegúrate de pasar el id del accionista
+                            disabled={!shareholder.shareholdersCountry} // Deshabilitado si no hay país seleccionado
                         >
                             <option value="">Seleccione un estado</option>
                             {shareholdersStatesList.map((state, index) => (
@@ -951,13 +958,15 @@ const Form = () => {
                             ))}
                         </select>
                     </label>
+
+
                     <label>
                         Ciudad del Accionista:
                         <select
                             name="shareholdersCity"
                             value={shareholder.shareholdersCity}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                            disabled={!shareholder.shareholdersState}
+                            onChange={(e) => handleShareholderChange(e, shareholder.id, 'shareholders')}
+                            disabled={!shareholder.shareholdersState} // Deshabilitado si no hay estado seleccionado
                         >
                             <option value="">Seleccione una ciudad</option>
                             {shareholdersCitiesList.map((city, index) => (
@@ -967,6 +976,7 @@ const Form = () => {
                             ))}
                         </select>
                     </label>
+
                     <label>
                         ¿El Accionista está expuesto políticamente?
                         <div>
@@ -1058,7 +1068,7 @@ const Form = () => {
                             type="text"
                             name="shareholdersRelativeName"
                             value={formData.shareholdersRelativeName}
-                            onChange={handleChange}
+                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
                         />
                     </label>
 

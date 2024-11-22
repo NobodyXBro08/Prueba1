@@ -31,7 +31,7 @@ const mapFormDataToOTC = (formData) => {
       },
       exposeInformation: {
         agentIsExpose: formData.agentIsExpose,
-        agenIisPublic: formData.agenIisPublic,
+        agentIsPublic: formData.agenIisPublic,
         agentEntityName: formData.agentEntityName,
         agentRelativeExpose: formData.agentRelativeExpose,
         agentRelativeName: formData.agentRelativeName,
@@ -76,8 +76,8 @@ const mapFormDataToOTC = (formData) => {
       financialOtherCoins: formData.financialOtherCoins,
       financialDaily: formData.financialDaily,
     },
-    bankingInformation: Array.isArray(formData.bankingInformation)
-      ? formData.bankingInformation.map((bank) => ({
+    bankingInformation: Array.isArray(formData.bankAccounts)
+      ? formData.bankAccounts.map((bank) => ({
           bankAccount: bank.bankAccount,
           bankName: bank.bankName,
           bankType: bank.bankType,
@@ -85,8 +85,8 @@ const mapFormDataToOTC = (formData) => {
           bankSwift: bank.bankSwift,
         }))
       : [], // Si no hay información bancaria, asignamos un array vacío
-    walletInformation: Array.isArray(formData.walletInformation)
-      ? formData.walletInformation.map((wallet) => ({
+    walletInformation: Array.isArray(formData.wallets)
+      ? formData.wallets.map((wallet) => ({
           walletAddress: wallet.walletAddress,
           walletCurrency: wallet.walletCurrency,
         }))
