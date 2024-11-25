@@ -61,8 +61,8 @@ const Form = () => {
             tradersEmail: '',
             tradersPhone: ''
         }],
-        financialAssets: '[]',
-        financialCoins: '[]',
+        financialAssets: [],
+        financialCoins: [],
         financialOtherCoins: '',
         financialDaily: '',
         bankAccounts: [{
@@ -84,8 +84,8 @@ const Form = () => {
         internationalAccountNumber: '',
         internationalAccountCountry: '',
         internationalAccountCity: '',
-        internationalCurrency: '[]',
-        internationalOperationsType: '[]',
+        internationalCurrency: [],
+        internationalOperationsType: [],
         internationalOtherOperations: '',
         internationalOtherCurrency: '',
         docRegister: '',
@@ -138,6 +138,7 @@ const Form = () => {
                     shareholdersState: '',
                     shareholdersCity: '',
                     shareholdersIsExpose: false,
+                    shareholdersIsPublic: false,
                     shareholdersEntityName: '',
                     shareholdersRelativeExpose: false,
                     shareholdersRelativeName: '',
@@ -1077,7 +1078,7 @@ const Form = () => {
                         <select
                             name="shareholdersRelationshipExpose"
                             value={formData.shareholdersRelationshipExpose}
-                            onChange={handleChange}
+                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
                         >
                             <option value="">Seleccione la relación</option>
                             {relationshipTypes.map((relationship, index) => (
