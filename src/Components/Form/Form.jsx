@@ -62,7 +62,7 @@ const Form = () => {
             tradersPhone: ''
         }],
         financialAssets: [],
-        financialCoins: [],
+        financialCoins: "",
         financialOtherCoins: '',
         financialDaily: '',
         bankAccounts: [{
@@ -84,8 +84,8 @@ const Form = () => {
         internationalAccountNumber: '',
         internationalAccountCountry: '',
         internationalAccountCity: '',
-        internationalCurrency: [],
-        internationalOperationsType: [],
+        internationalCurrency: "",
+        internationalOperationsType: "",
         internationalOtherOperations: '',
         internationalOtherCurrency: '',
         docRegister: '',
@@ -103,20 +103,71 @@ const Form = () => {
         docLaft: '',
         docLaft_reports: ''
     });
+// Maneja el cambio de país
+const handleShareholderChange = (e, shareholderId ) => {
+    const { name, value } = e.target;
+    setFormData(prevState => {
+        const updatedShareholders = prevState.shareholders.map(shareholder => {
+            if (shareholder.id === shareholderId) {
+                return { ...shareholder, [name]: value };
+            }
+            return shareholder;
+        });
 
-    const handleShareholderChange = (e, id) => {
-        const { name, value } = e.target;  // Extraemos el nombre y el valor del campo.
+        return {
+            ...prevState,
+            shareholders: updatedShareholders,
+        };
+    });
 
-        // Actualizamos el estado de los accionistas.
-        setFormData((prevData) => ({
-            ...prevData,
-            shareholders: prevData.shareholders.map((shareholder) =>
-                shareholder.id === id
-                    ? { ...shareholder, [name]: value } // Actualizamos el campo correspondiente.
-                    : shareholder
-            ),
-        }));
-    };
+    // Si el país cambia, actualizamos los estados disponibles
+    if (name === 'shareholdersCountry') {
+        const statesForCountry = states[value] || []; // `states` debe ser un objeto donde cada clave es un país
+        setShareholdersStatesList({ ...shareholdersStatesList, [value]: statesForCountry });
+    }
+};
+
+// Maneja el cambio de estado
+const handleShareholderStateChange = (e, shareholderId) => {
+    const { name, value } = e.target;
+    setFormData(prevState => {
+        const updatedShareholders = prevState.shareholders.map(shareholder => {
+            if (shareholder.id === shareholderId) {
+                return { ...shareholder, [name]: value };
+            }
+            return shareholder;
+        });
+
+        return {
+            ...prevState,
+            shareholders: updatedShareholders,
+        };
+    });
+
+    // Si el estado cambia, actualizamos las ciudades disponibles
+    if (name === 'shareholdersState') {
+        const citiesForState = cities[value] || []; // `cities` debe ser un objeto donde cada clave es un estado
+        setShareholdersCitiesList({ ...shareholdersCitiesList, [value]: citiesForState });
+    }
+};
+
+// Maneja el cambio de ciudad
+const handleShareholderCityChange = (e, shareholderId) => {
+    const { name, value } = e.target;
+    setFormData(prevState => {
+        const updatedShareholders = prevState.shareholders.map(shareholder => {
+            if (shareholder.id === shareholderId) {
+                return { ...shareholder, [name]: value };
+            }
+            return shareholder;
+        });
+
+        return {
+            ...prevState,
+            shareholders: updatedShareholders,
+        };
+    });
+};
 
 
     const addShareholder = () => {
@@ -269,57 +320,59 @@ const Form = () => {
 
     const states = {
         Argentina: ['Buenos Aires', 'CABA', 'Córdoba', 'Mendoza', 'Santa Fe'],
-        Brasil: ['São Paulo', 'Rio de Janeiro', 'Minas Gerais', 'Bahía', 'Paraná'],
-        Canadá: ['Ontario', 'Quebec', 'Columbia Británica', 'Alberta', 'Manitoba'],
-        Chile: ['Santiago', 'Valparaíso', 'Antofagasta', 'La Araucanía', 'Maule'],
-        Colombia: ['Bogotá', 'Antioquia', 'Valle del Cauca', 'Cundinamarca', 'Atlántico'],
-        España: ['Madrid', 'Barcelona', 'Valencia', 'Sevilla', 'Castilla y León'],
-        'Estados Unidos': ['California', 'Texas', 'Florida', 'Nueva York', 'Illinois'],
+        Brasil: ['Bahía', 'Minas Gerais', 'Paraná', 'Rio de Janeiro', 'São Paulo'],
+        Canadá: ['Alberta', 'Columbia Británica', 'Manitoba', 'Ontario', 'Quebec'],
+        Chile: ['Antofagasta', 'La Araucanía', 'Maule', 'Santiago', 'Valparaíso'],
+        Colombia: ['Antioquia', 'Atlántico', 'Bogotá', 'Cundinamarca', 'Valle del Cauca'],
+        España: ['Barcelona', 'Castilla y León', 'Madrid', 'Sevilla', 'Valencia'],
+        'Estados Unidos': ['California', 'Florida', 'Illinois', 'Nueva York', 'Texas'],
         México: ['CDMX', 'Jalisco', 'Nuevo León', 'Puebla', 'Yucatán']
     };
 
+
     const cities = {
         'Buenos Aires': ['La Plata', 'Mar del Plata', 'Tandil'],
-        CABA: ['Recoleta', 'Palermo', 'Caballito'],
-        Córdoba: ['Córdoba Capital', 'Villa Carlos Paz', 'Río Cuarto'],
+        CABA: ['Caballito', 'Palermo', 'Recoleta'],
+        Córdoba: ['Córdoba Capital', 'Río Cuarto', 'Villa Carlos Paz'],
         Mendoza: ['Mendoza Capital', 'San Rafael', 'Tunuyán'],
-        "Santa Fe": ['Santa Fe Capital', 'Rosario', 'Rafaela'],
-        "São Paulo": ['São Paulo', 'Campinas', 'Santos'],
-        'Rio de Janeiro': ['Rio de Janeiro', 'Niterói', 'Campos dos Goytacazes'],
-        'Minas Gerais': ['Belo Horizonte', 'Uberlândia', 'Juiz de Fora'],
-        Bahia: ['Salvador', 'Feira de Santana', 'Vitória da Conquista'],
+        "Santa Fe": ['Rosario', 'Rafaela', 'Santa Fe Capital'],
+        "São Paulo": ['Campinas', 'Santos', 'São Paulo'],
+        'Rio de Janeiro': ['Campos dos Goytacazes', 'Niterói', 'Rio de Janeiro'],
+        'Minas Gerais': ['Belo Horizonte', 'Juiz de Fora', 'Uberlândia'],
+        Bahia: ['Feira de Santana', 'Salvador', 'Vitória da Conquista'],
         Paraná: ['Curitiba', 'Londrina', 'Maringá'],
-        Ontario: ['Toronto', 'Ottawa', 'Mississauga'],
-        Quebec: ['Montreal', 'Quebec City', 'Laval'],
-        'Columbia Británica': ['Vancouver', 'Victoria', 'Surrey'],
+        Ontario: ['Mississauga', 'Ottawa', 'Toronto'],
+        Quebec: ['Laval', 'Montreal', 'Quebec City'],
+        'Columbia Británica': ['Surrey', 'Vancouver', 'Victoria'],
         Alberta: ['Calgary', 'Edmonton', 'Red Deer'],
-        Manitoba: ['Winnipeg', 'Brandon', 'Thompson'],
-        Santiago: ['Santiago Centro', 'Providencia', 'Las Condes'],
-        Valparaíso: ['Valparaíso', 'Viña del Mar', 'Quillota'],
+        Manitoba: ['Brandon', 'Thompson', 'Winnipeg'],
+        Santiago: ['Las Condes', 'Providencia', 'Santiago Centro'],
+        Valparaíso: ['Quillota', 'Valparaíso', 'Viña del Mar'],
         Antofagasta: ['Antofagasta', 'Calama', 'Taltal'],
-        'La Araucanía': ['Temuco', 'Pucón', 'Villarrica'],
-        Maule: ['Talca', 'Curicó', 'Linares'],
-        Bogotá: ['Bogotá', 'Medellín', 'Cali'],
-        Antioquia: ['Medellín', 'Rionegro', 'Envigado'],
-        'Valle del Cauca': ['Cali', 'Buenaventura', 'Palmira'],
-        Cundinamarca: ['Bogotá', 'Soacha', 'Chía'],
+        'La Araucanía': ['Pucón', 'Temuco', 'Villarrica'],
+        Maule: ['Curicó', 'Linares', 'Talca'],
+        Bogotá: ['Bogotá', 'Cali', 'Medellín'],
+        Antioquia: ['Envigado', 'Medellín', 'Rionegro'],
+        'Valle del Cauca': ['Buenaventura', 'Cali', 'Palmira'],
+        Cundinamarca: ['Bogotá', 'Chía', 'Soacha'],
         Atlántico: ['Barranquilla', 'Santa Marta', 'Soledad'],
-        Madrid: ['Madrid', 'Alcalá de Henares', 'Getafe'],
-        Barcelona: ['Barcelona', 'Hospitalet de Llobregat', 'Badalona'],
-        Valencia: ['Valencia', 'Alicante', 'Castellón de la Plana'],
-        Sevilla: ['Sevilla', 'Cádiz', 'Huelva'],
-        'Castilla y León': ['Valladolid', 'Salamanca', 'León'],
-        California: ['Los Ángeles', 'San Francisco', 'San Diego'],
-        Texas: ['Houston', 'Dallas', 'Austin'],
+        Madrid: ['Alcalá de Henares', 'Getafe', 'Madrid'],
+        Barcelona: ['Badalona', 'Barcelona', 'Hospitalet de Llobregat'],
+        Valencia: ['Alicante', 'Castellón de la Plana', 'Valencia'],
+        Sevilla: ['Cádiz', 'Huelva', 'Sevilla'],
+        'Castilla y León': ['León', 'Salamanca', 'Valladolid'],
+        California: ['Los Ángeles', 'San Diego', 'San Francisco'],
+        Texas: ['Austin', 'Dallas', 'Houston'],
         Florida: ['Miami', 'Orlando', 'Tampa'],
-        "Nueva York": ['Nueva York', 'Buffalo', 'Rochester'],
-        Illinois: ['Chicago', 'Springfield', 'Peoria'],
-        CDMX: ['Ciudad de México', 'Xochimilco', 'Coyoacán'],
+        "Nueva York": ['Buffalo', 'Nueva York', 'Rochester'],
+        Illinois: ['Chicago', 'Peoria', 'Springfield'],
+        CDMX: ['Ciudad de México', 'Coyoacán', 'Xochimilco'],
         Jalisco: ['Guadalajara', 'Puerto Vallarta', 'Tlaquepaque'],
-        "Nuevo León": ['Monterrey', 'San Pedro', 'San Nicolás'],
-        Puebla: ['Puebla', 'Cholula', 'Tehuacán'],
-        Yucatán: ['Mérida', 'Valladolid', 'Progreso']
+        "Nuevo León": ['Monterrey', 'San Nicolás', 'San Pedro'],
+        Puebla: ['Cholula', 'Puebla', 'Tehuacán'],
+        Yucatán: ['Mérida', 'Progreso', 'Valladolid']
     };
+
 
     const countriesBank = [
         'Argentina', 'Brasil', 'Canadá', 'Chile', 'Colombia', 'Estados Unidos', 'México'
@@ -358,10 +411,13 @@ const Form = () => {
         ]
     };
 
-
     const accountTypes = ['Ahorro', 'Corriente'];
     const companyTypes = ['Pública', 'Privada', 'Mixta'];
-    const relationshipTypes = ['Padre', 'Madre', 'Hijo', 'Hija', 'Hermano', 'Hermana', 'Esposo', 'Esposa'];
+    const relationshipTypes = [
+        'Esposo', 'Esposa', 'Hermana', 'Hermano', 'Hija', 'Hijo', 'Madre', 'Padre',
+        'Primo', 'Prima', 'Cuñado', 'Cuñada', 'Nieto', 'Nieta'
+    ];
+
 
     const [companyStatesList, setCompanyStatesList] = useState([]);
     const [companyCitiesList, setCompanyCitiesList] = useState([]);
@@ -380,25 +436,27 @@ const Form = () => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             [`${section}Country`]: country,
-            [`${section}State`]: '',
-            [`${section}City`]: '',
+            [`${section}State`]: '', // Reinicia el estado
+            [`${section}City`]: '', // Reinicia la ciudad
         }));
 
         if (section === 'international') {
-            setBankCitiesList(citiesBank[country] || []);
+            setBankCitiesList(citiesBank[country] || []); // Manejo para el tipo 'international'
         } else {
+            // Maneja las secciones correspondientes para company, agent y shareholders
             if (section === 'company') {
-                setCompanyStatesList(states[country] || []);
-                setCompanyCitiesList([]);
+                setCompanyStatesList(states[country] || []);  // Aquí asignas la lista de estados según el país
+                setCompanyCitiesList([]);  // Limpia las ciudades
             } else if (section === 'agent') {
                 setAgentStatesList(states[country] || []);
                 setAgentCitiesList([]);
             } else if (section === 'shareholders') {
-                setShareholdersStatesList(states[country] || []);
+                setShareholdersStatesList(states[country] || []); // Aquí asegúrate de que se asignen los estados correctamente
                 setShareholdersCitiesList([]);
             }
         }
     };
+
 
     const handleStateChange = (e, section) => {
         const state = e.target.value;
@@ -439,21 +497,30 @@ const Form = () => {
             }));
         }
     };
-
     const handleCheckboxChange = (e) => {
         const { name, value, checked } = e.target;
 
         setFormData((prevFormData) => {
-            const newValues = checked
-                ? [...prevFormData[name], value]
-                : prevFormData[name].filter((item) => item !== value);
+            // Convierte el campo actual en un array de valores separados por coma
+            const currentValue = prevFormData[name] ? prevFormData[name].split(', ') : [];
+
+            let updatedValues;
+
+            if (checked) {
+                // Si se marca el checkbox, agregamos el valor al array y lo convertimos en una cadena
+                updatedValues = [...currentValue, value].join(', ');
+            } else {
+                // Si se desmarca el checkbox, eliminamos el valor del array y lo convertimos en una cadena
+                updatedValues = currentValue.filter((item) => item !== value).join(', ');
+            }
 
             return {
                 ...prevFormData,
-                [name]: newValues,
+                [name]: updatedValues,  // Actualizamos el campo con la nueva cadena
             };
         });
     };
+
 
 
     const validateForm = () => {
@@ -469,13 +536,12 @@ const Form = () => {
 
         if (!validateForm()) return;
 
-        // Mapeamos los datos del formulario al formato esperado por la API usando el mapper
         const mappedData = mapFormDataToOTC(formData);
 
         try {
             const response = await axios.post(
                 'https://kii.forms.kiivalidator.com/api/kiiex/enterprise',
-                mappedData, // Usamos los datos mapeados
+                mappedData,
                 { headers: { 'Content-Type': 'application/json' } }
             );
             console.log('Formulario enviado exitosamente:', response);
@@ -855,7 +921,8 @@ const Form = () => {
                 </select>
             </label>
 
-            {/* Mostrar formulario de accionistas */}
+            {/* Información del Agente */}
+            <h2>Información del Accionista</h2>
             {formData.shareholders.map((shareholder) => (
                 <div key={shareholder.id} className="shareholder-form">
                     <label>
@@ -927,18 +994,18 @@ const Form = () => {
                             onChange={(e) => handleShareholderChange(e, shareholder.id)}
                         />
                     </label>
+
                     <label>
                         País del Accionista:
                         <select
                             name="shareholdersCountry"
                             value={shareholder.shareholdersCountry}
                             onChange={(e) => handleShareholderChange(e, shareholder.id, 'shareholders')}
+                            required
                         >
-                            <option value="">Seleccione un país</option>
+                            <option value="" disabled>Seleccione un país</option>
                             {countries.map((country, index) => (
-                                <option key={index} value={country}>
-                                    {country}
-                                </option>
+                                <option key={index} value={country}>{country}</option>
                             ))}
                         </select>
                     </label>
@@ -948,11 +1015,11 @@ const Form = () => {
                         <select
                             name="shareholdersState"
                             value={shareholder.shareholdersState}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)} // Asegúrate de pasar el id del accionista
-                            disabled={!shareholder.shareholdersCountry} // Deshabilitado si no hay país seleccionado
+                            onChange={(e) => handleShareholderStateChange(e, shareholder.id)}
+                            disabled={!shareholder.shareholdersCountry} // Solo habilitado si se selecciona un país
                         >
                             <option value="">Seleccione un estado</option>
-                            {shareholdersStatesList.map((state, index) => (
+                            {shareholder.shareholdersCountry && shareholdersStatesList[shareholder.shareholdersCountry]?.map((state, index) => (
                                 <option key={index} value={state}>
                                     {state}
                                 </option>
@@ -960,23 +1027,23 @@ const Form = () => {
                         </select>
                     </label>
 
-
                     <label>
                         Ciudad del Accionista:
                         <select
                             name="shareholdersCity"
                             value={shareholder.shareholdersCity}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id, 'shareholders')}
-                            disabled={!shareholder.shareholdersState} // Deshabilitado si no hay estado seleccionado
+                            onChange={(e) => handleShareholderCityChange(e, shareholder.id)}
+                            disabled={!shareholder.shareholdersState} // Solo habilitado si se selecciona un estado
                         >
                             <option value="">Seleccione una ciudad</option>
-                            {shareholdersCitiesList.map((city, index) => (
+                            {shareholder.shareholdersState && shareholdersCitiesList[shareholder.shareholdersState]?.map((city, index) => (
                                 <option key={index} value={city}>
                                     {city}
                                 </option>
                             ))}
                         </select>
                     </label>
+
 
                     <label>
                         ¿El Accionista está expuesto políticamente?
@@ -1232,7 +1299,7 @@ const Form = () => {
                                 type="checkbox"
                                 name="financialCoins"
                                 value={coin}
-                                checked={formData.financialCoins.includes(coin)}
+                                checked={formData.financialCoins.split(', ').includes(coin)}
                                 onChange={handleCheckboxChange}
                             />
                             {coin}
@@ -1240,6 +1307,7 @@ const Form = () => {
                     ))}
                 </div>
             </label>
+
 
             <label>
                 Otras monedas:
@@ -1488,7 +1556,7 @@ const Form = () => {
                                 type="checkbox"
                                 name="internationalCurrency"
                                 value={operation}
-                                checked={formData.internationalCurrency.includes(operation)} // Verifica si la opción está seleccionada
+                                checked={formData.internationalCurrency.split(', ').includes(operation)} // Verifica si la opción está seleccionada
                                 onChange={handleCheckboxChange}
                             />
                             {operation}
@@ -1506,7 +1574,7 @@ const Form = () => {
                                 type="checkbox"
                                 name="internationalOperationsType"
                                 value={operation}
-                                checked={formData.internationalOperationsType.includes(operation)} // Verifica si la operación está seleccionada
+                                checked={formData.internationalOperationsType.split(', ').includes(operation)} // Verifica si la operación está seleccionada
                                 onChange={handleCheckboxChange}
                             />
                             {operation}
@@ -1514,6 +1582,7 @@ const Form = () => {
                     ))}
                 </div>
             </label>
+
 
 
             <label>

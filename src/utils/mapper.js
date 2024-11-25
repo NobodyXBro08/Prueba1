@@ -49,8 +49,10 @@ const mapFormDataToOTC = (formData) => {
             agentAddress: shareholder.shareholdersAddress,
             agentPhone: shareholder.shareholdersPhone,
             agentCountry: shareholder.shareholdersCountry,
-            agentState: shareholder.shareholdersState,
-            agentCity: shareholder.shareholdersCity,
+/*             agentCountry: shareholder.shareholdersCountry,
+            agentState: shareholder.shareholdersState, */
+            agentState: "Bogota",
+            agentCity: "Bogota",
           },
           exposeInformation: {
             agentIsExpose: shareholder.shareholdersIsExpose,
