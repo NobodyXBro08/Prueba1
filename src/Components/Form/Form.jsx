@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { mapFormDataToOTC } from '../../utils/mapper';
 import './form.css';
+import '../Styles/global.css'
 
 const Form = () => {
     const [formData, setFormData] = useState({
@@ -103,71 +104,71 @@ const Form = () => {
         docLaft: '',
         docLaft_reports: ''
     });
-// Maneja el cambio de país
-const handleShareholderChange = (e, shareholderId ) => {
-    const { name, value } = e.target;
-    setFormData(prevState => {
-        const updatedShareholders = prevState.shareholders.map(shareholder => {
-            if (shareholder.id === shareholderId) {
-                return { ...shareholder, [name]: value };
-            }
-            return shareholder;
+    // Maneja el cambio de país
+    const handleShareholderChange = (e, shareholderId) => {
+        const { name, value } = e.target;
+        setFormData(prevState => {
+            const updatedShareholders = prevState.shareholders.map(shareholder => {
+                if (shareholder.id === shareholderId) {
+                    return { ...shareholder, [name]: value };
+                }
+                return shareholder;
+            });
+
+            return {
+                ...prevState,
+                shareholders: updatedShareholders,
+            };
         });
 
-        return {
-            ...prevState,
-            shareholders: updatedShareholders,
-        };
-    });
+        // Si el país cambia, actualizamos los estados disponibles
+        if (name === 'shareholdersCountry') {
+            const statesForCountry = states[value] || []; // `states` debe ser un objeto donde cada clave es un país
+            setShareholdersStatesList({ ...shareholdersStatesList, [value]: statesForCountry });
+        }
+    };
 
-    // Si el país cambia, actualizamos los estados disponibles
-    if (name === 'shareholdersCountry') {
-        const statesForCountry = states[value] || []; // `states` debe ser un objeto donde cada clave es un país
-        setShareholdersStatesList({ ...shareholdersStatesList, [value]: statesForCountry });
-    }
-};
+    // Maneja el cambio de estado
+    const handleShareholderStateChange = (e, shareholderId) => {
+        const { name, value } = e.target;
+        setFormData(prevState => {
+            const updatedShareholders = prevState.shareholders.map(shareholder => {
+                if (shareholder.id === shareholderId) {
+                    return { ...shareholder, [name]: value };
+                }
+                return shareholder;
+            });
 
-// Maneja el cambio de estado
-const handleShareholderStateChange = (e, shareholderId) => {
-    const { name, value } = e.target;
-    setFormData(prevState => {
-        const updatedShareholders = prevState.shareholders.map(shareholder => {
-            if (shareholder.id === shareholderId) {
-                return { ...shareholder, [name]: value };
-            }
-            return shareholder;
+            return {
+                ...prevState,
+                shareholders: updatedShareholders,
+            };
         });
 
-        return {
-            ...prevState,
-            shareholders: updatedShareholders,
-        };
-    });
+        // Si el estado cambia, actualizamos las ciudades disponibles
+        if (name === 'shareholdersState') {
+            const citiesForState = cities[value] || []; // `cities` debe ser un objeto donde cada clave es un estado
+            setShareholdersCitiesList({ ...shareholdersCitiesList, [value]: citiesForState });
+        }
+    };
 
-    // Si el estado cambia, actualizamos las ciudades disponibles
-    if (name === 'shareholdersState') {
-        const citiesForState = cities[value] || []; // `cities` debe ser un objeto donde cada clave es un estado
-        setShareholdersCitiesList({ ...shareholdersCitiesList, [value]: citiesForState });
-    }
-};
+    // Maneja el cambio de ciudad
+    const handleShareholderCityChange = (e, shareholderId) => {
+        const { name, value } = e.target;
+        setFormData(prevState => {
+            const updatedShareholders = prevState.shareholders.map(shareholder => {
+                if (shareholder.id === shareholderId) {
+                    return { ...shareholder, [name]: value };
+                }
+                return shareholder;
+            });
 
-// Maneja el cambio de ciudad
-const handleShareholderCityChange = (e, shareholderId) => {
-    const { name, value } = e.target;
-    setFormData(prevState => {
-        const updatedShareholders = prevState.shareholders.map(shareholder => {
-            if (shareholder.id === shareholderId) {
-                return { ...shareholder, [name]: value };
-            }
-            return shareholder;
+            return {
+                ...prevState,
+                shareholders: updatedShareholders,
+            };
         });
-
-        return {
-            ...prevState,
-            shareholders: updatedShareholders,
-        };
-    });
-};
+    };
 
 
     const addShareholder = () => {
@@ -557,1225 +558,1435 @@ const handleShareholderCityChange = (e, shareholderId) => {
 
     return (
         <form onSubmit={handleSubmit}>
+            <section className='wrapper'>
+                <div className='title'>Información de la Empresa</div>
+                <hr />
+                <div className='form'>
+                    <div className='company__column1'>
+                        <label>
+                            Nombre de la empresa *
+                            <input
+                                type="text"
+                                name="companyName"
+                                value={formData.companyName}
+                                onChange={handleChange}
+                                required
+                            />
+                        </label>
+                    </div>
 
-            {/* Información de la Empresa */}
-            <h2>Información de la Empresa</h2>
-            <label>
-                ID de la empresa:
-                <input
-                    type="text"
-                    name="companyId"
-                    value={formData.companyId}
-                    onChange={handleChange}
-                />
-            </label>
-            <label>
-                Nombre de la empresa:
-                <input
-                    type="text"
-                    name="companyName"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    required
-                />
-            </label>
-            <label>
-                Acrónimo de la empresa:
-                <input
-                    type="text"
-                    name="companyAcronym"
-                    value={formData.companyAcronym}
-                    onChange={handleChange}
-                />
-            </label>
-            <label>
-                Tipo de empresa:
-                <select
-                    name="companyType"
-                    value={formData.companyType}
-                    onChange={handleChange}
-                >
-                    <option value="">Seleccione un tipo</option>
-                    {companyTypes.map((type, index) => (
-                        <option key={index} value={type}>
-                            {type}
-                        </option>
-                    ))}
-                </select>
-            </label>
-            <label>
-                Correo electrónico de la empresa:
-                <input
-                    type="email"
-                    name="companyEmail"
-                    value={formData.companyEmail}
-                    onChange={handleChange}
-                    required
-                />
-            </label>
-            <label>
-                Dirección de la empresa:
-                <input
-                    type="text"
-                    name="companyAddress"
-                    value={formData.companyAddress}
-                    onChange={handleChange}
-                />
-            </label>
-            <label>
-                País de la empresa:
-                <select
-                    name="companyCountry"
-                    value={formData.companyCountry}
-                    onChange={(e) => handleCountryChange(e, 'company')} // Agregar el prefijo correcto
-                >
-                    <option value="">Seleccione un país</option>
-                    {countries.map((country, index) => (
-                        <option key={index} value={country}>
-                            {country}
-                        </option>
-                    ))}
-                </select>
-            </label>
-            <label>
-                Estado de la empresa:
-                <select
-                    name="companyState"
-                    value={formData.companyState}
-                    onChange={(e) => handleStateChange(e, 'company')}
-                    disabled={!formData.companyCountry}
-                >
-                    <option value="">Seleccione un estado</option>
-                    {companyStatesList.length > 0 &&
-                        companyStatesList.map((state, index) => (
-                            <option key={index} value={state}>
-                                {state}
-                            </option>
-                        ))}
-                </select>
-            </label>
-            <label>
-                Ciudad de la empresa:
-                <select
-                    name="companyCity"
-                    value={formData.companyCity}
-                    onChange={(e) => handleCityChange(e, 'company')}
-                    disabled={!formData.companyState}
-                >
-                    <option value="">Seleccione una ciudad</option>
-                    {companyCitiesList.length > 0 &&
-                        companyCitiesList.map((city, index) => (
-                            <option key={index} value={city}>
-                                {city}
-                            </option>
-                        ))}
-                </select>
-            </label>
+                    <div>
+                        <label>
+                            Sigla
+                            <input
+                                type="text"
+                                name="companyAcronym"
+                                value={formData.companyAcronym}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            NIT / EIN *
+                            <input
+                                type="text"
+                                name="companyId"
+                                value={formData.companyId}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
 
-            <label>
-                Teléfono de la empresa:
-                <input
-                    type="tel"
-                    name="companyPhone"
-                    value={formData.companyPhone}
-                    onChange={handleChange}
-                />
-            </label>
+                    <div>
+                        <label>
+                            Tipo de empresa *
+                            <select
+                                name="companyType"
+                                value={formData.companyType}
+                                onChange={handleChange}
+                            >
+                                <option value="">Seleccione un tipo</option>
+                                {companyTypes.map((type, index) => (
+                                    <option key={index} value={type}>
+                                        {type}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Email *
+                            <input
+                                type="email"
+                                name="companyEmail"
+                                value={formData.companyEmail}
+                                onChange={handleChange}
+                                required
+                            />
+                        </label>
+                    </div>
+                    <div className='company__column2'>
+                        <label>
+                            Dirección de la empresa *
+                            <input
+                                type="text"
+                                name="companyAddress"
+                                value={formData.companyAddress}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Teléfono de la empresa *
+                            <input
+                                type="tel"
+                                name="companyPhone"
+                                value={formData.companyPhone}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            País *
+                            <select
+                                name="companyCountry"
+                                value={formData.companyCountry}
+                                onChange={(e) => handleCountryChange(e, 'company')} // Agregar el prefijo correcto
+                            >
+                                <option value="">Seleccione un país</option>
+                                {countries.map((country, index) => (
+                                    <option key={index} value={country}>
+                                        {country}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Estado/Departamento *
+                            <select
+                                name="companyState"
+                                value={formData.companyState}
+                                onChange={(e) => handleStateChange(e, 'company')}
+                                disabled={!formData.companyCountry}
+                            >
+                                <option value="">Seleccione un estado</option>
+                                {companyStatesList.length > 0 &&
+                                    companyStatesList.map((state, index) => (
+                                        <option key={index} value={state}>
+                                            {state}
+                                        </option>
+                                    ))}
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Ciudad *
+                            <select
+                                name="companyCity"
+                                value={formData.companyCity}
+                                onChange={(e) => handleCityChange(e, 'company')}
+                                disabled={!formData.companyState}
+                            >
+                                <option value="">Seleccione una ciudad</option>
+                                {companyCitiesList.length > 0 &&
+                                    companyCitiesList.map((city, index) => (
+                                        <option key={index} value={city}>
+                                            {city}
+                                        </option>
+                                    ))}
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </section>
 
             {/* Información del Agente */}
-            <h2>Información del Agente</h2>
-            <label>
-                ID/Passport del Agente:
-                <input
-                    type="text"
-                    name="agentId_passport"
-                    value={formData.agentId_passport}
-                    onChange={handleChange}
-                />
-            </label>
-            <label>
-                Nombre del Agente:
-                <input
-                    type="text"
-                    name="agentName"
-                    value={formData.agentName}
-                    onChange={handleChange}
-                    required
-                />
-            </label>
-            <label>
-                País de nacimiento del Agente:
-                <select
-                    name="agentBornCountry"
-                    value={formData.agentBornCountry}
-                    onChange={handleChange}
-                >
-                    <option value="">Seleccione un país</option>
-                    {countries.map((country, index) => (
-                        <option key={index} value={country}>
-                            {country}
-                        </option>
-                    ))}
-                </select>
-            </label>
-            <label>
-                Fecha de nacimiento del Agente:
-                <input
-                    type="date"
-                    name="agentBirthDate"
-                    value={formData.agentBirthDate}
-                    onChange={handleChange}
-                />
-            </label>
-            <label>
-                Correo electrónico del Agente:
-                <input
-                    type="email"
-                    name="agentEmail"
-                    value={formData.agentEmail}
-                    onChange={handleChange}
-                />
-            </label>
-            <label>
-                Dirección del Agente:
-                <input
-                    type="text"
-                    name="agentAddress"
-                    value={formData.agentAddress}
-                    onChange={handleChange}
-                />
-            </label>
-            <label>
-                Teléfono del Agente:
-                <input
-                    type="tel"
-                    name="agentPhone"
-                    value={formData.agentPhone}
-                    onChange={handleChange}
-                />
-            </label>
-            <label>
-                País del Agente:
-                <select
-                    name="agentCountry"
-                    value={formData.agentCountry}
-                    onChange={(e) => handleCountryChange(e, 'agent')} // Agregar el prefijo correcto
-                >
-                    <option value="">Seleccione un país</option>
-                    {countries.map((country, index) => (
-                        <option key={index} value={country}>
-                            {country}
-                        </option>
-                    ))}
-                </select>
-            </label>
-
-            <label>
-                Estado del Agente:
-                <select
-                    name="agentState"
-                    value={formData.agentState}
-                    onChange={(e) => handleStateChange(e, 'agent')} // Agregar el prefijo correcto
-                    disabled={!formData.agentCountry} // Deshabilitado si no hay país seleccionado
-                >
-                    <option value="">Seleccione un estado</option>
-                    {agentStatesList.length > 0 &&
-                        agentStatesList.map((state, index) => (
-                            <option key={index} value={state}>
-                                {state}
-                            </option>
-                        ))}
-                </select>
-            </label>
-
-            <label>
-                Ciudad del Agente:
-                <select
-                    name="agentCity"
-                    value={formData.agentCity}
-                    onChange={(e) => handleCityChange(e, 'agent')} // Agregar el prefijo correcto
-                    disabled={!formData.agentState} // Deshabilitado si no hay estado seleccionado
-                >
-                    <option value="">Seleccione una ciudad</option>
-                    {agentCitiesList.length > 0 &&
-                        agentCitiesList.map((city, index) => (
-                            <option key={index} value={city}>
-                                {city}
-                            </option>
-                        ))}
-                </select>
-            </label>
-
-            <label>
-                ¿El Agente está expuesto políticamente?
-                <div>
-                    <label>
-                        <input
-                            type="radio"
-                            name="agentIsExpose"
-                            value="yes"
-                            checked={formData.agentIsExpose === 'yes'}
-                            onChange={handleChange}
-                        />
-                        Sí
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="agentIsExpose"
-                            value="no"
-                            checked={formData.agentIsExpose === 'no'}
-                            onChange={handleChange}
-                        />
-                        No
-                    </label>
-                </div>
-            </label>
-
-            <label>
-                ¿El Agente es una persona pública?
-                <div>
-                    <label>
-                        <input
-                            type="radio"
-                            name="agenIisPublic"
-                            value="yes"
-                            checked={formData.agenIisPublic === 'yes'}
-                            onChange={handleChange}
-                        />
-                        Sí
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="agenIisPublic"
-                            value="no"
-                            checked={formData.agenIisPublic === 'no'}
-                            onChange={handleChange}
-                        />
-                        No
-                    </label>
-                </div>
-            </label>
-
-            <label>
-                Nombre de la entidad del Agente:
-                <input
-                    type="text"
-                    name="agentEntityName"
-                    value={formData.agentEntityName}
-                    onChange={handleChange}
-                />
-            </label>
-
-            <label>
-                ¿El Familiar de una Persona Pública Expuesta?
-                <div>
-                    <label>
-                        <input
-                            type="radio"
-                            name="agentRelativeExpose"
-                            value="yes"
-                            checked={formData.agentRelativeExpose === 'yes'}
-                            onChange={handleChange}
-                        />
-                        Sí
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="agentRelativeExpose"
-                            value="no"
-                            checked={formData.agentRelativeExpose === 'no'}
-                            onChange={handleChange}
-                        />
-                        No
-                    </label>
-                </div>
-            </label>
-
-
-            <label>
-                Nombre del Agente Relacionado:
-                <input
-                    type="text"
-                    name="agentRelativeName"
-                    value={formData.agentRelativeName}
-                    onChange={handleChange}
-                />
-            </label>
-
-            <label>
-                Relación con el Agente:
-                <select
-                    name="agentRelationshipExpose"
-                    value={formData.agentRelationshipExpose}
-                    onChange={handleChange}
-                >
-                    <option value="">Seleccione la relación</option>
-                    {relationshipTypes.map((relationship, index) => (
-                        <option key={index} value={relationship}>
-                            {relationship}
-                        </option>
-                    ))}
-                </select>
-            </label>
-
-            {/* Información del Agente */}
-            <h2>Información del Accionista</h2>
-            {formData.shareholders.map((shareholder) => (
-                <div key={shareholder.id} className="shareholder-form">
-                    <label>
-                        ID/Passport del Accionista:
+            <section className='wrapper'>
+                <div className='title'>Información del Agente</div>
+                <hr />
+                <div className='form'>
+                    <div className='agent__column1'>
+                        <label>
+                            Nombre Completo *
+                            <input
+                                type="text"
+                                name="agentName"
+                                value={formData.agentName}
+                                onChange={handleChange}
+                                required
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            ID/Pasaporte *
+                            <input
+                                type="text"
+                                name="agentId_passport"
+                                value={formData.agentId_passport}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            País de nacimiento *
+                            <select
+                                name="agentBornCountry"
+                                value={formData.agentBornCountry}
+                                onChange={handleChange}
+                            >
+                                <option value="">Seleccione un país</option>
+                                {countries.map((country, index) => (
+                                    <option key={index} value={country}>
+                                        {country}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Fecha de nacimiento *
+                            <input
+                                type="date"
+                                name="agentBirthDate"
+                                value={formData.agentBirthDate}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Email *
+                            <input
+                                type="email"
+                                name="agentEmail"
+                                value={formData.agentEmail}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div className='agent__column2'>
+                        <label>
+                            Dirección de Notificaciones *
+                            <input
+                                type="text"
+                                name="agentAddress"
+                                value={formData.agentAddress}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Teléfono Personal *
+                            <input
+                                type="tel"
+                                name="agentPhone"
+                                value={formData.agentPhone}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            País *
+                            <select
+                                name="agentCountry"
+                                value={formData.agentCountry}
+                                onChange={(e) => handleCountryChange(e, 'agent')} // Agregar el prefijo correcto
+                            >
+                                <option value="">Seleccione un país</option>
+                                {countries.map((country, index) => (
+                                    <option key={index} value={country}>
+                                        {country}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Estado/Departamento *
+                            <select
+                                name="agentState"
+                                value={formData.agentState}
+                                onChange={(e) => handleStateChange(e, 'agent')} // Agregar el prefijo correcto
+                                disabled={!formData.agentCountry} // Deshabilitado si no hay país seleccionado
+                            >
+                                <option value="">Seleccione un estado</option>
+                                {agentStatesList.length > 0 &&
+                                    agentStatesList.map((state, index) => (
+                                        <option key={index} value={state}>
+                                            {state}
+                                        </option>
+                                    ))}
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Ciudad *
+                            <select
+                                name="agentCity"
+                                value={formData.agentCity}
+                                onChange={(e) => handleCityChange(e, 'agent')} // Agregar el prefijo correcto
+                                disabled={!formData.agentState} // Deshabilitado si no hay estado seleccionado
+                            >
+                                <option value="">Seleccione una ciudad</option>
+                                {agentCitiesList.length > 0 &&
+                                    agentCitiesList.map((city, index) => (
+                                        <option key={index} value={city}>
+                                            {city}
+                                        </option>
+                                    ))}
+                            </select>
+                        </label>
+                    </div>
+                    <div className="agent__column3">
                         <input
                             type="text"
-                            name="shareholdersId_passport"
-                            value={shareholder.shareholdersId_passport}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                            value=" ¿Es usted una persona públicamente expuesta?*"
+                            readOnly
+                            className="readonly-field"
                         />
-                    </label>
-                    <label>
-                        Nombre del Accionista:
+                    </div>
+                    <div className="radio-group">
+                        <label>
+                            <input
+                                type="radio"
+                                name="agentIsExposed"
+                                value="yes"
+                                /* checked={isExposedYes} */
+                                onChange={handleChange}
+                            />
+                            Sí
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="agentIsExposed"
+                                value="no"
+                                /* checked={!isExposedYes} */
+                                onChange={handleChange}
+                            />
+                            No
+                        </label>
+                    </div>
+
+                    <div className="agent__column4">
                         <input
                             type="text"
-                            name="shareholdersName"
-                            value={shareholder.shareholdersName}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                            value="¿Es usted reconocido como una persona pública?*"
+                            readOnly
+                            className="readonly-field"
                         />
-                    </label>
-                    <label>
-                        País de nacimiento del Accionista:
-                        <select
-                            name="shareholdersBornCountry"
-                            value={shareholder.shareholdersBornCountry}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                        >
-                            <option value="">Seleccione un país</option>
-                            {countries.map((country, index) => (
-                                <option key={index} value={country}>
-                                    {country}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-                    <label>
-                        Fecha de nacimiento del Accionista:
-                        <input
-                            type="date"
-                            name="shareholdersBirthDate"
-                            value={shareholder.shareholdersBirthDate}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                        />
-                    </label>
-                    <label>
-                        Correo electrónico del Accionista:
-                        <input
-                            type="email"
-                            name="shareholdersEmail"
-                            value={shareholder.shareholdersEmail}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                        />
-                    </label>
-                    <label>
-                        Dirección del Accionista:
+                    </div>
+                    <div className="radio-group">
+                        <label>
+                            <input
+                                type="radio"
+                                name="agentIsPublic"
+                                value="yes"
+                                /* checked={isRecognizedYes} */
+                                onChange={handleChange}
+                            />
+                            Sí
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="agentIsPublic"
+                                value="no"
+                                /* checked={!isRecognizedYes} */
+                                onChange={handleChange}
+                            />
+                            No
+                        </label>
+                    </div>
+
+                    <div className='agent__column5'>
+                        <label>
+                            Nombre de la entidad *
+                            <input
+                                type="text"
+                                name="agentEntityName"
+                                value={formData.agentEntityName}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div className="agent__column6">
                         <input
                             type="text"
-                            name="shareholdersAddress"
-                            value={shareholder.shareholdersAddress}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                            value="¿Es usted Familiar de una Persona Públicamente Expuesta?*"
+                            readOnly
+                            className="readonly-field"
                         />
-                    </label>
-                    <label>
-                        Teléfono del Accionista:
-                        <input
-                            type="tel"
-                            name="shareholdersPhone"
-                            value={shareholder.shareholdersPhone}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                        />
-                    </label>
+                    </div>
+                    <div className="radio-group">
+                        <label>
+                            <input
+                                type="radio"
+                                name="relativeIsExpose"
+                                value="yes"
+                                /* checked={isRecognizedYes} */
+                                onChange={handleChange}
+                            />
+                            Sí
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="relativeIsExpose"
+                                value="no"
+                                /* checked={!isRecognizedYes} */
+                                onChange={handleChange}
+                            />
+                            No
+                        </label>
+                    </div>
 
-                    <label>
-                        País del Accionista:
-                        <select
-                            name="shareholdersCountry"
-                            value={shareholder.shareholdersCountry}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id, 'shareholders')}
-                            required
-                        >
-                            <option value="" disabled>Seleccione un país</option>
-                            {countries.map((country, index) => (
-                                <option key={index} value={country}>{country}</option>
-                            ))}
-                        </select>
-                    </label>
+                    <div className='agent__column7'>
+                        <label>
+                            Nombre de la Persona Públicamente expuesta (PPE) *
+                            <input
+                                type="text"
+                                name="agentRelativeName"
+                                value={formData.agentRelativeName}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Parentesco con PPE *
+                            <select
+                                name="agentRelationshipExpose"
+                                value={formData.agentRelationshipExpose}
+                                onChange={handleChange}
+                            >
+                                <option value="">Seleccione la relación</option>
+                                {relationshipTypes.map((relationship, index) => (
+                                    <option key={index} value={relationship}>
+                                        {relationship}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </section>
 
-                    <label>
-                        Estado del Accionista:
-                        <select
-                            name="shareholdersState"
-                            value={shareholder.shareholdersState}
-                            onChange={(e) => handleShareholderStateChange(e, shareholder.id)}
-                            disabled={!shareholder.shareholdersCountry} // Solo habilitado si se selecciona un país
-                        >
-                            <option value="">Seleccione un estado</option>
-                            {shareholder.shareholdersCountry && shareholdersStatesList[shareholder.shareholdersCountry]?.map((state, index) => (
-                                <option key={index} value={state}>
-                                    {state}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
+            {/* Información del Accionista */}
+            <section className='wrapper'>
+                <div className='title'>Información del Accionista</div>
+                <hr />
 
-                    <label>
-                        Ciudad del Accionista:
-                        <select
-                            name="shareholdersCity"
-                            value={shareholder.shareholdersCity}
-                            onChange={(e) => handleShareholderCityChange(e, shareholder.id)}
-                            disabled={!shareholder.shareholdersState} // Solo habilitado si se selecciona un estado
-                        >
-                            <option value="">Seleccione una ciudad</option>
-                            {shareholder.shareholdersState && shareholdersCitiesList[shareholder.shareholdersState]?.map((city, index) => (
-                                <option key={index} value={city}>
-                                    {city}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
+                {/* Contenedor de los botones Añadir y Eliminar */}
+                <div className='tab-buttons'>
+                    {/* Solo agrega un botón de "Añadir Accionista" fuera del map */}
+                    <div>
+                        <button type="button" onClick={addShareholder}>
+                            Añadir Accionista
+                        </button>
+                    </div>
+                </div>
 
+                {/* Formulario para la información del accionista */}
+                <div className='form'>
+                    {formData.shareholders.map((shareholder) => (
+                        <div key={shareholder.id} className="form form__shareholders">
 
-                    <label>
-                        ¿El Accionista está expuesto políticamente?
-                        <div>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="shareholdersIsExpose"
-                                    value="yes"
-                                    checked={shareholder.shareholdersIsExpose === 'yes'}
-                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                                />
-                                Sí
-                            </label>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="shareholdersIsExpose"
-                                    value="no"
-                                    checked={shareholder.shareholdersIsExpose === 'no'}
-                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                                />
-                                No
-                            </label>
+                            <div>
+                                <button type="button" onClick={() => removeShareholder(shareholder.id)}>
+                                    Eliminar Accionista
+                                </button>
+                            </div>
+
+                            <div>
+                                <label>
+                                    ID/Passport del Accionista:
+                                    <input
+                                        type="text"
+                                        name="shareholdersId_passport"
+                                        value={shareholder.shareholdersId_passport}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Nombre del Accionista:
+                                    <input
+                                        type="text"
+                                        name="shareholdersName"
+                                        value={shareholder.shareholdersName}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    País de nacimiento del Accionista:
+                                    <select
+                                        name="shareholdersBornCountry"
+                                        value={shareholder.shareholdersBornCountry}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                    >
+                                        <option value="">Seleccione un país</option>
+                                        {countries.map((country, index) => (
+                                            <option key={index} value={country}>
+                                                {country}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Fecha de nacimiento del Accionista:
+                                    <input
+                                        type="date"
+                                        name="shareholdersBirthDate"
+                                        value={shareholder.shareholdersBirthDate}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Correo electrónico del Accionista:
+                                    <input
+                                        type="email"
+                                        name="shareholdersEmail"
+                                        value={shareholder.shareholdersEmail}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Dirección del Accionista:
+                                    <input
+                                        type="text"
+                                        name="shareholdersAddress"
+                                        value={shareholder.shareholdersAddress}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Teléfono del Accionista:
+                                    <input
+                                        type="tel"
+                                        name="shareholdersPhone"
+                                        value={shareholder.shareholdersPhone}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    País del Accionista:
+                                    <select
+                                        name="shareholdersCountry"
+                                        value={shareholder.shareholdersCountry}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id, 'shareholders')}
+                                        required
+                                    >
+                                        <option value="" disabled>Seleccione un país</option>
+                                        {countries.map((country, index) => (
+                                            <option key={index} value={country}>{country}</option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Estado del Accionista:
+                                    <select
+                                        name="shareholdersState"
+                                        value={shareholder.shareholdersState}
+                                        onChange={(e) => handleShareholderStateChange(e, shareholder.id)}
+                                        disabled={!shareholder.shareholdersCountry} // Solo habilitado si se selecciona un país
+                                    >
+                                        <option value="">Seleccione un estado</option>
+                                        {shareholder.shareholdersCountry && shareholdersStatesList[shareholder.shareholdersCountry]?.map((state, index) => (
+                                            <option key={index} value={state}>
+                                                {state}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Ciudad del Accionista:
+                                    <select
+                                        name="shareholdersCity"
+                                        value={shareholder.shareholdersCity}
+                                        onChange={(e) => handleShareholderCityChange(e, shareholder.id)}
+                                        disabled={!shareholder.shareholdersState} // Solo habilitado si se selecciona un estado
+                                    >
+                                        <option value="">Seleccione una ciudad</option>
+                                        {shareholder.shareholdersState && shareholdersCitiesList[shareholder.shareholdersState]?.map((city, index) => (
+                                            <option key={index} value={city}>
+                                                {city}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    ¿El Accionista está expuesto políticamente?
+                                    <div>
+                                        <div>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="shareholdersIsExpose"
+                                                    value="yes"
+                                                    checked={shareholder.shareholdersIsExpose === 'yes'}
+                                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                                />
+                                                Sí
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="shareholdersIsExpose"
+                                                    value="no"
+                                                    checked={shareholder.shareholdersIsExpose === 'no'}
+                                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                                />
+                                                No
+                                            </label>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    ¿El Accionista es una persona pública?
+                                    <div>
+                                        <div>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="shareholdersIsPublic"
+                                                    value="yes"
+                                                    checked={shareholder.shareholdersIsPublic === 'yes'}
+                                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                                />
+                                                Sí
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="shareholdersIsPublic"
+                                                    value="no"
+                                                    checked={shareholder.shareholdersIsPublic === 'no'}
+                                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                                />
+                                                No
+                                            </label>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Nombre de la entidad del Accionista:
+                                    <input
+                                        type="text"
+                                        name="shareholdersEntityName"
+                                        value={shareholder.shareholdersEntityName}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    ¿El Familiar de una Persona Pública Expuesta?
+                                    <div>
+                                        <div>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="shareholdersRelativeExpose"
+                                                    value="yes"
+                                                    checked={shareholder.shareholdersRelativeExpose === 'yes'}
+                                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                                />
+                                                Sí
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label>
+                                                <input
+                                                    type="radio"
+                                                    name="shareholdersRelativeExpose"
+                                                    value="no"
+                                                    checked={shareholder.shareholdersRelativeExpose === 'no'}
+                                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                                />
+                                                No
+                                            </label>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Nombre de la persona Publicamente Expuesta (PPE):
+                                    <input
+                                        type="text"
+                                        name="shareholdersRelativeName"
+                                        value={formData.shareholdersRelativeName}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Relación con PPE:
+                                    <select
+                                        name="shareholdersRelationshipExpose"
+                                        value={formData.shareholdersRelationshipExpose}
+                                        onChange={(e) => handleShareholderChange(e, shareholder.id)}
+                                    >
+                                        <option value="">Seleccione la relación</option>
+                                        {relationshipTypes.map((relationship, index) => (
+                                            <option key={index} value={relationship}>
+                                                {relationship}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
                         </div>
-                    </label>
-                    <label>
-                        ¿El Accionista es una persona pública?
-                        <div>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="shareholdersIsPublic"
-                                    value="yes"
-                                    checked={shareholder.shareholdersIsPublic === 'yes'}
-                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                                />
-                                Sí
-                            </label>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="shareholdersIsPublic"
-                                    value="no"
-                                    checked={shareholder.shareholdersIsPublic === 'no'}
-                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                                />
-                                No
-                            </label>
-                        </div>
-                    </label>
-                    <label>
-                        Nombre de la entidad del Accionista:
-                        <input
-                            type="text"
-                            name="shareholdersEntityName"
-                            value={shareholder.shareholdersEntityName}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                        />
-                    </label>
-                    <label>
-                        ¿El Familiar de una Persona Pública Expuesta?
-                        <div>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="shareholdersRelativeExpose"
-                                    value="yes"
-                                    checked={shareholder.shareholdersRelativeExpose === 'yes'}
-                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                                />
-                                Sí
-                            </label>
-                            <label>
-                                <input
-                                    type="radio"
-                                    name="shareholdersRelativeExpose"
-                                    value="no"
-                                    checked={shareholder.shareholdersRelativeExpose === 'no'}
-                                    onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                                />
-                                No
-                            </label>
-                        </div>
-                    </label>
-
-                    <label>
-                        Nombre de la persona Publicamente Expuesta (PPE):
-                        <input
-                            type="text"
-                            name="shareholdersRelativeName"
-                            value={formData.shareholdersRelativeName}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                        />
-                    </label>
-
-                    <label>
-                        Relación con PPE:
-                        <select
-                            name="shareholdersRelationshipExpose"
-                            value={formData.shareholdersRelationshipExpose}
-                            onChange={(e) => handleShareholderChange(e, shareholder.id)}
-                        >
-                            <option value="">Seleccione la relación</option>
-                            {relationshipTypes.map((relationship, index) => (
-                                <option key={index} value={relationship}>
-                                    {relationship}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-
-                    {/* Botón para eliminar un accionista */}
-                    <button type="button" onClick={() => removeShareholder(shareholder.id)}>
-                        Eliminar Accionista
-                    </button>
+                    ))}
                 </div>
-            ))}
-
-            {/* Botón para añadir un accionista */}
-            <button type="button" onClick={addShareholder}>
-                Añadir Accionista
-            </button>
-
-
+            </section>
 
             {/* Mostrar formulario de traders */}
-            {formData.traders.map((trader) => (
-                <div key={trader.id} className="trader-form">
-                    <label>
-                        ID/Passport del Trader:
-                        <input
-                            type="text"
-                            name="tradersId_passport"
-                            value={trader.tradersId_passport}
-                            onChange={(e) => handleTraderChange(e, trader.id)}
-                        />
-                    </label>
-                    <label>
-                        Nombre del Trader:
-                        <input
-                            type="text"
-                            name="tradersName"
-                            value={trader.tradersName}
-                            onChange={(e) => handleTraderChange(e, trader.id)}
-                        />
-                    </label>
-                    <label>
-                        Correo electrónico del Trader:
-                        <input
-                            type="email"
-                            name="tradersEmail"
-                            value={trader.tradersEmail}
-                            onChange={(e) => handleTraderChange(e, trader.id)}
-                        />
-                    </label>
-                    <label>
-                        Teléfono del Trader:
-                        <input
-                            type="tel"
-                            name="tradersPhone"
-                            value={trader.tradersPhone}
-                            onChange={(e) => handleTraderChange(e, trader.id)}
-                        />
-                    </label>
+            <section className='wrapper'>
+                <div className='title'>Información de Traders</div>
+                <hr />
+                <div className='form'>
+                    {formData.traders.map((trader) => (
+                        <div key={trader.id} className="trader-form">
+                            <div>
+                                <label>
+                                    ID/Passport del Trader:
+                                    <input
+                                        type="text"
+                                        name="tradersId_passport"
+                                        value={trader.tradersId_passport}
+                                        onChange={(e) => handleTraderChange(e, trader.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Nombre del Trader:
+                                    <input
+                                        type="text"
+                                        name="tradersName"
+                                        value={trader.tradersName}
+                                        onChange={(e) => handleTraderChange(e, trader.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Correo electrónico del Trader:
+                                    <input
+                                        type="email"
+                                        name="tradersEmail"
+                                        value={trader.tradersEmail}
+                                        onChange={(e) => handleTraderChange(e, trader.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Teléfono del Trader:
+                                    <input
+                                        type="tel"
+                                        name="tradersPhone"
+                                        value={trader.tradersPhone}
+                                        onChange={(e) => handleTraderChange(e, trader.id)}
+                                    />
+                                </label>
+                            </div>
+                            {/* Botón para eliminar un trader */}
+                            <div>
+                                <button type="button" onClick={() => removeTrader(trader.id)}>
+                                    Eliminar Trader
+                                </button>
+                            </div>
+                        </div>
+                    ))}
 
-                    {/* Botón para eliminar un trader */}
-                    <button type="button" onClick={() => removeTrader(trader.id)}>
-                        Eliminar Trader
-                    </button>
+                    {/* Botón para añadir un trader */}
+                    <div>
+                        <button type="button" onClick={addTrader}>
+                            Añadir Trader
+                        </button>
+                    </div>
                 </div>
-            ))}
-
-            {/* Botón para añadir un trader */}
-            <button type="button" onClick={addTrader}>
-                Añadir Trader
-            </button>
+            </section>
 
             {/* Información Financiera */}
-            <h2>Información Financiera</h2>
-            <label>
-                Activos Totales USD:
-                <div>
-                    <label>
-                        <input
-                            type="radio"
-                            name="financialAssets"
-                            value="< $500,000"
-                            checked={formData.financialMainCurrency === "< $500,000"}
-                            onChange={handleChange}
-                        />
-                        &lt; $500,000
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="financialAssets"
-                            value="$500,000 - $1,000,000"
-                            checked={formData.financialAssets === "$500,000 - $1,000,000"}
-                            onChange={handleChange}
-                        />
-                        $500,000 - $1,000,000
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="financialAssets"
-                            value="$1,000,000 - $2,000,000"
-                            checked={formData.financialAssets === "$1,000,000 - $2,000,000"}
-                            onChange={handleChange}
-                        />
-                        $1,000,000 - $2,000,000
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="financialAssets"
-                            value="$2,000,000 - $5,000,000"
-                            checked={formData.financialAssets === "$2,000,000 - $5,000,000"}
-                            onChange={handleChange}
-                        />
-                        $2,000,000 - $5,000,000
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="financialAssets"
-                            value="$5,000,000 - $10,000,000"
-                            checked={formData.financialAssets === "$5,000,000 - $10,000,000"}
-                            onChange={handleChange}
-                        />
-                        $5,000,000 - $10,000,000
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="financialAssets"
-                            value=">= $10,000,000"
-                            checked={formData.financialAssets === ">= $10,000,000"}
-                            onChange={handleChange}
-                        />
-                        &gt;= $10,000,000
-                    </label>
-                </div>
-            </label>
-
-            <label>
-                Monedas en las que hace trading:
-                <div>
-                    {['USDT', 'USDC', 'BUSD', 'BNB', 'ETH', 'DAI', 'BTC', 'XRP'].map((coin, index) => (
-                        <label key={index}>
-                            <input
-                                type="checkbox"
-                                name="financialCoins"
-                                value={coin}
-                                checked={formData.financialCoins.split(', ').includes(coin)}
-                                onChange={handleCheckboxChange}
-                            />
-                            {coin}
+            <section className='wrapper'>
+                <div className='title'>Información Financiera</div>
+                <hr />
+                <div className='form'>
+                    <div>
+                        <label>
+                            Activos Totales USD:
+                            <div className='botton__financial'>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="financialAssets"
+                                        value="< $500,000"
+                                        checked={formData.financialMainCurrency === "< $500,000"}
+                                        onChange={handleChange}
+                                    />
+                                    &lt; $500,000
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="financialAssets"
+                                        value="$500,000 - $1,000,000"
+                                        checked={formData.financialAssets === "$500,000 - $1,000,000"}
+                                        onChange={handleChange}
+                                    />
+                                    $500,000 - $1,000,000
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="financialAssets"
+                                        value="$1,000,000 - $2,000,000"
+                                        checked={formData.financialAssets === "$1,000,000 - $2,000,000"}
+                                        onChange={handleChange}
+                                    />
+                                    $1,000,000 - $2,000,000
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="financialAssets"
+                                        value="$2,000,000 - $5,000,000"
+                                        checked={formData.financialAssets === "$2,000,000 - $5,000,000"}
+                                        onChange={handleChange}
+                                    />
+                                    $2,000,000 - $5,000,000
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="financialAssets"
+                                        value="$5,000,000 - $10,000,000"
+                                        checked={formData.financialAssets === "$5,000,000 - $10,000,000"}
+                                        onChange={handleChange}
+                                    />
+                                    $5,000,000 - $10,000,000
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="financialAssets"
+                                        value=">= $10,000,000"
+                                        checked={formData.financialAssets === ">= $10,000,000"}
+                                        onChange={handleChange}
+                                    />
+                                    &gt;= $10,000,000
+                                </label>
+                            </div>
                         </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            Monedas en las que hace trading:
+                            <div className='box__financial'>
+                                {['USDT', 'USDC', 'BUSD', 'BNB', 'ETH', 'DAI', 'BTC', 'XRP'].map((coin, index) => (
+                                    <label key={index}>
+                                        <input
+                                            type="checkbox"
+                                            name="financialCoins"
+                                            value={coin}
+                                            checked={formData.financialCoins.split(', ').includes(coin)}
+                                            onChange={handleCheckboxChange}
+                                        />
+                                        {coin}
+                                    </label>
+                                ))}
+                            </div>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            Otras monedas:
+                            <input
+                                type="text"
+                                name="financialOtherCoins"
+                                value={formData.financialOtherCoins}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Operación diaria:
+                            <input
+                                type="text"
+                                name="financialDaily"
+                                value={formData.financialDaily}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section className='wrapper'>
+                <div className='title'>Información Bancaria</div>
+                <hr />
+                <div className='form'>
+
+                    {/* Mostrar formulario de cuentas bancarias */}
+                    {formData.bankAccounts.map((bankAccount) => (
+                        <div key={bankAccount.id} className="bank-form">
+                            <div>
+                                <label>
+                                    Cuenta Bancaria:
+                                    <input
+                                        type="text"
+                                        name="bankAccount"
+                                        value={bankAccount.bankAccount}
+                                        onChange={(e) => handleBankChange(e, bankAccount.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Nombre del Banco:
+                                    <input
+                                        type="text"
+                                        name="bankName"
+                                        value={bankAccount.bankName}
+                                        onChange={(e) => handleBankChange(e, bankAccount.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Tipo de Banco:
+                                    <select
+                                        name="bankType"
+                                        value={bankAccount.bankType}
+                                        onChange={(e) => handleBankChange(e, bankAccount.id)}
+                                    >
+                                        <option value="">Seleccione un tipo</option>
+                                        {accountTypes.map((type, index) => (
+                                            <option key={index} value={type}>
+                                                {type}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    País del Banco:
+                                    <select
+                                        name="bankCountry"
+                                        value={bankAccount.bankCountry}
+                                        onChange={(e) => handleBankChange(e, bankAccount.id)}
+                                    >
+                                        <option value="">Seleccione un país</option>
+                                        {countries.map((country, index) => (
+                                            <option key={index} value={country}>
+                                                {country}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    SWIFT del Banco:
+                                    <input
+                                        type="text"
+                                        name="bankSwift"
+                                        value={bankAccount.bankSwift}
+                                        onChange={(e) => handleBankChange(e, bankAccount.id)}
+                                    />
+                                </label>
+                            </div>
+
+                            {/* Botón para eliminar una cuenta bancaria */}
+                            <button type="button" onClick={() => removeBankAccount(bankAccount.id)}>
+                                Eliminar Cuenta Bancaria
+                            </button>
+                        </div>
                     ))}
-                </div>
-            </label>
 
-
-            <label>
-                Otras monedas:
-                <input
-                    type="text"
-                    name="financialOtherCoins"
-                    value={formData.financialOtherCoins}
-                    onChange={handleChange}
-                />
-            </label>
-
-            <label>
-                Operación diaria:
-                <input
-                    type="text"
-                    name="financialDaily"
-                    value={formData.financialDaily}
-                    onChange={handleChange}
-                />
-            </label>
-
-            <h2>Información Bancaria</h2>
-
-            {/* Mostrar formulario de cuentas bancarias */}
-            {formData.bankAccounts.map((bankAccount) => (
-                <div key={bankAccount.id} className="bank-form">
-                    <label>
-                        Cuenta Bancaria:
-                        <input
-                            type="text"
-                            name="bankAccount"
-                            value={bankAccount.bankAccount}
-                            onChange={(e) => handleBankChange(e, bankAccount.id)}
-                        />
-                    </label>
-
-                    <label>
-                        Nombre del Banco:
-                        <input
-                            type="text"
-                            name="bankName"
-                            value={bankAccount.bankName}
-                            onChange={(e) => handleBankChange(e, bankAccount.id)}
-                        />
-                    </label>
-
-                    <label>
-                        Tipo de Banco:
-                        <select
-                            name="bankType"
-                            value={bankAccount.bankType}
-                            onChange={(e) => handleBankChange(e, bankAccount.id)}
-                        >
-                            <option value="">Seleccione un tipo</option>
-                            {accountTypes.map((type, index) => (
-                                <option key={index} value={type}>
-                                    {type}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-
-                    <label>
-                        País del Banco:
-                        <select
-                            name="bankCountry"
-                            value={bankAccount.bankCountry}
-                            onChange={(e) => handleBankChange(e, bankAccount.id)}
-                        >
-                            <option value="">Seleccione un país</option>
-                            {countries.map((country, index) => (
-                                <option key={index} value={country}>
-                                    {country}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
-
-                    <label>
-                        SWIFT del Banco:
-                        <input
-                            type="text"
-                            name="bankSwift"
-                            value={bankAccount.bankSwift}
-                            onChange={(e) => handleBankChange(e, bankAccount.id)}
-                        />
-                    </label>
-
-                    {/* Botón para eliminar una cuenta bancaria */}
-                    <button type="button" onClick={() => removeBankAccount(bankAccount.id)}>
-                        Eliminar Cuenta Bancaria
+                    {/* Botón para añadir una cuenta bancaria */}
+                    <button type="button" onClick={addBankAccount}>
+                        Añadir Cuenta Bancaria
                     </button>
                 </div>
-            ))}
+            </section>
 
-            {/* Botón para añadir una cuenta bancaria */}
-            <button type="button" onClick={addBankAccount}>
-                Añadir Cuenta Bancaria
-            </button>
+            <section className='wrapper'>
+                <div className='title'>Información del Wallet</div>
+                <hr />
+                <div className='form'>
 
-            <h2>Información del Wallet</h2>
+                    {/* Mostrar formulario de wallets */}
+                    {formData.wallets.map((wallet) => (
+                        <div key={wallet.id} className="wallet-form">
+                            <div>
+                                <label>
+                                    Dirección del Wallet:
+                                    <input
+                                        type="text"
+                                        name="walletAddress"
+                                        value={wallet.walletAddress}
+                                        onChange={(e) => handleWalletChange(e, wallet.id)}
+                                    />
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    Moneda del Wallet:
+                                    <input
+                                        type="text"
+                                        name="walletCurrency"
+                                        value={wallet.walletCurrency}
+                                        onChange={(e) => handleWalletChange(e, wallet.id)}
+                                    />
+                                </label>
+                            </div>
+                            {/* Botón para eliminar un wallet */}
+                            <button type="button" onClick={() => removeWallet(wallet.id)}>
+                                Eliminar Wallet
+                            </button>
+                        </div>
+                    ))}
 
-            {/* Mostrar formulario de wallets */}
-            {formData.wallets.map((wallet) => (
-                <div key={wallet.id} className="wallet-form">
-                    <label>
-                        Dirección del Wallet:
-                        <input
-                            type="text"
-                            name="walletAddress"
-                            value={wallet.walletAddress}
-                            onChange={(e) => handleWalletChange(e, wallet.id)}
-                        />
-                    </label>
-                    <label>
-                        Moneda del Wallet:
-                        <input
-                            type="text"
-                            name="walletCurrency"
-                            value={wallet.walletCurrency}
-                            onChange={(e) => handleWalletChange(e, wallet.id)}
-                        />
-                    </label>
-
-                    {/* Botón para eliminar un wallet */}
-                    <button type="button" onClick={() => removeWallet(wallet.id)}>
-                        Eliminar Wallet
+                    {/* Botón para añadir un wallet */}
+                    <button type="button" onClick={addWallet}>
+                        Añadir Wallet
                     </button>
                 </div>
-            ))}
-
-            {/* Botón para añadir un wallet */}
-            <button type="button" onClick={addWallet}>
-                Añadir Wallet
-            </button>
+            </section>
 
             {/* Operaciones Internacionales */}
-            <h2>Operaciones Internacionales</h2>
-            <label>
-                ¿Tiene operaciones internacionales?
-                <div>
-                    <label>
+            <section className='wrapper'>
+                <div className='title'>Operaciones Internacionales</div>
+                <hr />
+                <div className='form'>
+                    <div className="operations__column1">
                         <input
-                            type="radio"
-                            name="internationalOperations"
-                            value="yes"
-                            checked={formData.internationalOperations === 'yes'}
-                            onChange={handleChange}
+                            type="text"
+                            value="¿Realiza Operaciones en Moneda Extranjera?*"
+                            readOnly
+                            className="readonly-field"
                         />
-                        Sí
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="internationalOperations"
-                            value="no"
-                            checked={formData.internationalOperations === 'no'}
-                            onChange={handleChange}
-                        />
-                        No
-                    </label>
-                </div>
-            </label>
-
-            <label>
-                Banco internacional:
-                <input
-                    type="text"
-                    name="internationalBank"
-                    value={formData.internationalBank}
-                    onChange={handleChange}
-                />
-            </label>
-            <label>
-                Tipo de cuenta internacional:
-                <select
-                    name="internationalAccountType"
-                    value={formData.internationalAccountType}
-                    onChange={handleChange}
-                >
-                    <option value="">Seleccione un tipo de cuenta</option>
-                    {accountTypes.map((type) => (
-                        <option key={type} value={type}>
-                            {type}
-                        </option>
-                    ))}
-                </select>
-            </label>
-            <label>
-                Número de cuenta internacional:
-                <input
-                    type="text"
-                    name="internationalAccountNumber"
-                    value={formData.internationalAccountNumber}
-                    onChange={handleChange}
-                />
-            </label>
-
-            <label>
-                País del Banco:
-                <select
-                    name="internationalAccountCountry"
-                    value={formData.internationalAccountCountry}
-                    onChange={(e) => setFormData({
-                        ...formData,
-                        internationalAccountCountry: e.target.value,
-                        internationalAccountCity: "",  // Reseteamos la ciudad al cambiar el país
-                    })}
-                >
-                    <option value="">Seleccione un país</option>
-                    {countriesBank.map((country, index) => (
-                        <option key={index} value={country}>
-                            {country}
-                        </option>
-                    ))}
-                </select>
-            </label>
-
-            <label>
-                Ciudad del Banco:
-                <select
-                    name="internationalAccountCity"
-                    value={formData.internationalAccountCity}
-                    onChange={(e) => setFormData({
-                        ...formData,
-                        internationalAccountCity: e.target.value,
-                    })}
-                    disabled={!formData.internationalAccountCountry} // Deshabilitado si no hay país seleccionado
-                >
-                    <option value="">Seleccione una ciudad</option>
-                    {formData.internationalAccountCountry && citiesBank[formData.internationalAccountCountry] &&
-                        citiesBank[formData.internationalAccountCountry].map((city, index) => (
-                            <option key={index} value={city}>
-                                {city}
-                            </option>
-                        ))}
-                </select>
-            </label>
-
-            <label>
-                Monedas de la Operación:
-                <div>
-                    {['Dólares', 'Euros'].map((operation, index) => (
-                        <label key={index}>
+                    </div>
+                    <div className="radio-group">
+                        <label>
                             <input
-                                type="checkbox"
-                                name="internationalCurrency"
-                                value={operation}
-                                checked={formData.internationalCurrency.split(', ').includes(operation)} // Verifica si la opción está seleccionada
-                                onChange={handleCheckboxChange}
+                                type="radio"
+                                name="internationalOperations"
+                                value="yes"
+                                checked={formData.operatesInForeignCurrency === 'yes'}
+                                onChange={handleChange}
                             />
-                            {operation}
+                            SÍ
                         </label>
-                    ))}
-                </div>
-            </label>
-
-            <label>
-                Tipo de operación internacional:
-                <div>
-                    {['Importación', 'Inversiones', 'Exportación', 'Transferencia', 'Préstamos', 'Pago Servicios'].map((operation, index) => (
-                        <label key={index}>
+                        <label>
                             <input
-                                type="checkbox"
-                                name="internationalOperationsType"
-                                value={operation}
-                                checked={formData.internationalOperationsType.split(', ').includes(operation)} // Verifica si la operación está seleccionada
-                                onChange={handleCheckboxChange}
+                                type="radio"
+                                name="internationalOperations"
+                                value="no"
+                                checked={formData.operatesInForeignCurrency === 'no'}
+                                onChange={handleChange}
                             />
-                            {operation}
+                            NO
                         </label>
-                    ))}
+                    </div>
+                    <div className='operations__column2'>
+                        <label>
+                            Nombre del Banco:
+                            <input
+                                type="text"
+                                name="internationalBank"
+                                value={formData.internationalBank}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Tipo de cuenta:
+                            <select
+                                name="internationalAccountType"
+                                value={formData.internationalAccountType}
+                                onChange={handleChange}
+                            >
+                                <option value="">Seleccione un tipo de cuenta</option>
+                                {accountTypes.map((type) => (
+                                    <option key={type} value={type}>
+                                        {type}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Número de cuenta:
+                            <input
+                                type="text"
+                                name="internationalAccountNumber"
+                                value={formData.internationalAccountNumber}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            País del Banco:
+                            <select
+                                name="internationalAccountCountry"
+                                value={formData.internationalAccountCountry}
+                                onChange={(e) => setFormData({
+                                    ...formData,
+                                    internationalAccountCountry: e.target.value,
+                                    internationalAccountCity: "",  // Reseteamos la ciudad al cambiar el país
+                                })}
+                            >
+                                <option value="">Seleccione un país</option>
+                                {countriesBank.map((country, index) => (
+                                    <option key={index} value={country}>
+                                        {country}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Ciudad del Banco:
+                            <select
+                                name="internationalAccountCity"
+                                value={formData.internationalAccountCity}
+                                onChange={(e) => setFormData({
+                                    ...formData,
+                                    internationalAccountCity: e.target.value,
+                                })}
+                                disabled={!formData.internationalAccountCountry} // Deshabilitado si no hay país seleccionado
+                            >
+                                <option value="">Seleccione una ciudad</option>
+                                {formData.internationalAccountCountry && citiesBank[formData.internationalAccountCountry] &&
+                                    citiesBank[formData.internationalAccountCountry].map((city, index) => (
+                                        <option key={index} value={city}>
+                                            {city}
+                                        </option>
+                                    ))}
+                            </select>
+                        </label>
+                    </div>
+                    <div className='operations__column3'>
+                        <label>
+                            Tipo de operación internacional:
+                            <div className='checkbox__operation'>
+                                {['Importación', 'Inversiones', 'Exportación', 'Transferencia', 'Préstamos', 'Pago Servicios'].map((operation, index) => (
+                                    <label key={index}>
+                                        <input
+                                            type="checkbox"
+                                            name="internationalOperationsType"
+                                            value={operation}
+                                            checked={formData.internationalOperationsType.split(', ').includes(operation)} // Verifica si la operación está seleccionada
+                                            onChange={handleCheckboxChange}
+                                        />
+                                        {operation}
+                                    </label>
+                                ))}
+                            </div>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Monedas de la Operación:
+                            <div className='checkbox__coin'>
+                                {['Dólares', 'Euros'].map((operation, index) => (
+                                    <label key={index}>
+                                        <input
+                                            type="checkbox"
+                                            name="internationalCurrency"
+                                            value={operation}
+                                            checked={formData.internationalCurrency.split(', ').includes(operation)} // Verifica si la opción está seleccionada
+                                            onChange={handleCheckboxChange}
+                                        />
+                                        {operation}
+                                    </label>
+                                ))}
+                            </div>
+                        </label>
+                    </div>
+                    <div className='operations__column4'>
+                        <label>
+                            Otro tipo de operación:
+                            <input
+                                type="text"
+                                name="internationalOtherOperations"
+                                value={formData.internationalOtherOperations}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Otra moneda internacional:
+                            <input
+                                type="text"
+                                name="internationalOtherCurrency"
+                                value={formData.internationalOtherCurrency}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
                 </div>
-            </label>
-
-
-
-            <label>
-                Otro tipo de operación:
-                <input
-                    type="text"
-                    name="internationalOtherOperations"
-                    value={formData.internationalOtherOperations}
-                    onChange={handleChange}
-                />
-            </label>
-
-            <label>
-                Otra moneda internacional:
-                <input
-                    type="text"
-                    name="internationalOtherCurrency"
-                    value={formData.internationalOtherCurrency}
-                    onChange={handleChange}
-                />
-            </label>
+            </section>
 
             {/* Documentos */}
-            <h2>Documentos</h2>
-            <label>
-                Nombre de usuario de Kiiex:
-                <input
-                    type="text"
-                    name="kiiexUserName"
-                    value={formData.kiiexUserName}
-                    onChange={handleChange}
-                />
-            </label>
+            <section className='wrapper'>
+                <div className='title'>Documentos</div>
+                <hr />
+                <div className='form'>
+                    <div>
+                        <label>
+                            Nombre de usuario de Kiiex:
+                            <input
+                                type="text"
+                                name="kiiexUserName"
+                                value={formData.kiiexUserName}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Correo electrónico de Kiiex:
+                            <input
+                                type="email"
+                                name="kiiexEmail"
+                                value={formData.kiiexEmail}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Registro de Documento:
+                            <input
+                                type="file"
+                                name="docRegister"
+                                onChange={(e) => handleFileChange(e, 'docRegister')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            RUT del Documento:
+                            <input
+                                type="file"
+                                name="docRut"
+                                onChange={(e) => handleFileChange(e, 'docRut')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Representante Legal del Documento:
+                            <input
+                                type="file"
+                                name="docReprentativeLegal"
+                                onChange={(e) => handleFileChange(e, 'docReprentativeLegal')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Residencia del Representante:
+                            <input
+                                type="file"
+                                name="docResidenceRepresentative"
+                                onChange={(e) => handleFileChange(e, 'docResidenceRepresentative')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Documento del Representante de la Compañía:
+                            <input
+                                type="file"
+                                name="docCompanyRepresentative"
+                                onChange={(e) => handleFileChange(e, 'docCompanyRepresentative')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Estados Bancarios:
+                            <input
+                                type="file"
+                                name="docBankStatements"
+                                onChange={(e) => handleFileChange(e, 'docBankStatements')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Estructura de Participación:
+                            <input
+                                type="file"
+                                name="docShareholdingStructure"
+                                onChange={(e) => handleFileChange(e, 'docShareholdingStructure')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Documentos de Accionistas:
+                            <input
+                                type="file"
+                                name="docShareholders"
+                                onChange={(e) => handleFileChange(e, 'docShareholders')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Bio del Rubro:
+                            <input
+                                type="file"
+                                name="docRubBio"
+                                onChange={(e) => handleFileChange(e, 'docRubBio')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Licencia Profesional:
+                            <input
+                                type="file"
+                                name="docProfessionalLicense"
+                                onChange={(e) => handleFileChange(e, 'docProfessionalLicense')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Estados Financieros Certificados:
+                            <input
+                                type="file"
+                                name="docCertifiedFinancial_statements"
+                                onChange={(e) => handleFileChange(e, 'docCertifiedFinancial_statements')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Declaración Tributaria de la Compañía:
+                            <input
+                                type="file"
+                                name="docCompanyTaxReturn"
+                                onChange={(e) => handleFileChange(e, 'docCompanyTaxReturn')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Documento LAFT:
+                            <input
+                                type="file"
+                                name="docLaft"
+                                onChange={(e) => handleFileChange(e, 'docLaft')}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Reportes LAFT:
+                            <input
+                                type="file"
+                                name="docLaft_reports"
+                                onChange={(e) => handleFileChange(e, 'docLaft_reports')}
+                            />
+                        </label>
+                    </div>
 
-            <label>
-                Correo electrónico de Kiiex:
-                <input
-                    type="email"
-                    name="kiiexEmail"
-                    value={formData.kiiexEmail}
-                    onChange={handleChange}
-                />
-            </label>
-
-            <label>
-                Registro de Documento:
-                <input
-                    type="file"
-                    name="docRegister"
-                    onChange={(e) => handleFileChange(e, 'docRegister')}
-                />
-            </label>
-
-            <label>
-                RUT del Documento:
-                <input
-                    type="file"
-                    name="docRut"
-                    onChange={(e) => handleFileChange(e, 'docRut')}
-                />
-            </label>
-
-            <label>
-                Representante Legal del Documento:
-                <input
-                    type="file"
-                    name="docReprentativeLegal"
-                    onChange={(e) => handleFileChange(e, 'docReprentativeLegal')}
-                />
-            </label>
-
-            <label>
-                Residencia del Representante:
-                <input
-                    type="file"
-                    name="docResidenceRepresentative"
-                    onChange={(e) => handleFileChange(e, 'docResidenceRepresentative')}
-                />
-            </label>
-
-            <label>
-                Documento del Representante de la Compañía:
-                <input
-                    type="file"
-                    name="docCompanyRepresentative"
-                    onChange={(e) => handleFileChange(e, 'docCompanyRepresentative')}
-                />
-            </label>
-
-            <label>
-                Estados Bancarios:
-                <input
-                    type="file"
-                    name="docBankStatements"
-                    onChange={(e) => handleFileChange(e, 'docBankStatements')}
-                />
-            </label>
-
-            <label>
-                Estructura de Participación:
-                <input
-                    type="file"
-                    name="docShareholdingStructure"
-                    onChange={(e) => handleFileChange(e, 'docShareholdingStructure')}
-                />
-            </label>
-
-            <label>
-                Documentos de Accionistas:
-                <input
-                    type="file"
-                    name="docShareholders"
-                    onChange={(e) => handleFileChange(e, 'docShareholders')}
-                />
-            </label>
-
-            <label>
-                Bio del Rubro:
-                <input
-                    type="file"
-                    name="docRubBio"
-                    onChange={(e) => handleFileChange(e, 'docRubBio')}
-                />
-            </label>
-
-            <label>
-                Licencia Profesional:
-                <input
-                    type="file"
-                    name="docProfessionalLicense"
-                    onChange={(e) => handleFileChange(e, 'docProfessionalLicense')}
-                />
-            </label>
-
-            <label>
-                Estados Financieros Certificados:
-                <input
-                    type="file"
-                    name="docCertifiedFinancial_statements"
-                    onChange={(e) => handleFileChange(e, 'docCertifiedFinancial_statements')}
-                />
-            </label>
-
-            <label>
-                Declaración Tributaria de la Compañía:
-                <input
-                    type="file"
-                    name="docCompanyTaxReturn"
-                    onChange={(e) => handleFileChange(e, 'docCompanyTaxReturn')}
-                />
-            </label>
-
-            <label>
-                Documento LAFT:
-                <input
-                    type="file"
-                    name="docLaft"
-                    onChange={(e) => handleFileChange(e, 'docLaft')}
-                />
-            </label>
-
-            <label>
-                Reportes LAFT:
-                <input
-                    type="file"
-                    name="docLaft_reports"
-                    onChange={(e) => handleFileChange(e, 'docLaft_reports')}
-                />
-            </label>
-
-
-            {/*Declaración de aceptación */}
-            <label>
-                Acepto la declaración de fondos:
-                <input
-                    type="checkbox"
-                    name="acceptFundDeclaration"
-                    checked={formData.acceptFundDeclaration}
-                    onChange={handleChange}
-                />
-            </label>
-            <label>
-                Acepto el uso de datos:
-                <input
-                    type="checkbox"
-                    name="acceptDataUse"
-                    checked={formData.acceptDataUse}
-                    onChange={handleChange}
-                />
-            </label>
-
+                    {/*Declaración de aceptación */}
+                    <div>
+                        <label>
+                            Acepto la declaración de fondos:
+                            <input
+                                type="checkbox"
+                                name="acceptFundDeclaration"
+                                checked={formData.acceptFundDeclaration}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            Acepto el uso de datos:
+                            <input
+                                type="checkbox"
+                                name="acceptDataUse"
+                                checked={formData.acceptDataUse}
+                                onChange={handleChange}
+                            />
+                        </label>
+                    </div>
+                </div>
+            </section>
             {/* Envío del formulario */}
-            <button type="submit">Enviar</button>
+            <footer className="footer">
+                <section className="wrapper wrapper__footer">
+                    <hr />
+                    <button type="botton" className="submit-button" onClick={handleSubmit}>
+                        Enviar Formulario
+                    </button>
+                </section>
+            </footer>
         </form >
     );
 };
